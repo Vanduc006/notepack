@@ -13,7 +13,7 @@ const AuthLayout = () => {
         <Card className='w-full max-w-md p-6 border-border/60'>
             <div className='flex items-center gap-3 mb-4 justify-center'>
                 <img src='/vite.svg' className='w-8 h-8 rounded-md'/>
-                <div className='text-2xl font-semibold tracking-tight'>[PACK] FLASHCARD</div>
+                <div className='text-2xl font-semibold tracking-tight'>NOTEPACK</div>
             </div>
             <p className='text-sm text-muted-foreground text-center mb-6'>Sign in to start packing your knowledge.</p>
             <Button className='w-full' variant='default' onClick={signUp}>

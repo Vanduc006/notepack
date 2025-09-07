@@ -1,6 +1,8 @@
 import { useEffect, useState} from 'react'
 import './index.css'
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes, Link } from 'react-router-dom'
+import Privacy from './pages/Legal/Privacy'
+import Terms from './pages/Legal/Terms'
 import HomeLayout from './pages/Home/HomeLayout'
 // import { Auth } from '@supabase/auth-ui-react'
 // import { ThemeSupa } from '@supabase/auth-ui-shared'
@@ -101,8 +103,21 @@ function App() {
         />
 
         <Route path="/auth" element={<AuthLayout />} />
+
+        {/* Public legal pages for platform review */}
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/terms" element={<Terms />} />
       </Routes>
 
+      <footer className='mt-10 border-t'>
+        <div className='max-w-5xl mx-auto px-4 py-6 text-xs text-muted-foreground flex flex-col sm:flex-row gap-2 sm:gap-4 items-center justify-center'>
+          <div>© {new Date().getFullYear()} NOTEPACK</div>
+          <div className='flex items-center gap-4'>
+            <Link to="/privacy" className='hover:text-foreground'>Privacy</Link>
+            <Link to="/terms" className='hover:text-foreground'>Terms</Link>
+          </div>
+        </div>
+      </footer>
     </>
   )
 }

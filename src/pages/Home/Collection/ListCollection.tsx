@@ -12,8 +12,9 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Star } from "lucide-react"
+import { Play, Folder } from "lucide-react"
 import { useNavigate } from 'react-router-dom'
+import BounceLoader from 'react-spinners/BounceLoader'
 
 type ListCollectionProps = {
     userID : string,
@@ -56,38 +57,62 @@ const ListCollection = ({userID,refreshList} : ListCollectionProps) => {
     },[userID,refreshList])
 
   return (
-    <div className="grid grid-cols-1 gap-5 sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-        {listCollection.length !== 0 &&
-            listCollection.map((collection,index) => (
-            <div
-                key={index}
-                className="hover:scale-[1.02] cursor-pointer"
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      {listCollection.length === 0 && (
+        <Card className="col-span-full">
+          <CardHeader className="flex">
+            <CardTitle className="text-base">Delivering your pack</CardTitle>
+          </CardHeader>
+          <CardContent className="pb-6 text-sm text-muted-foreground flex items-center gap-1">
+            It's take few seconds for preparing 
+            <BounceLoader size={10} className='ml-2' color='#4871f7'/> 
+
+          </CardContent>
+        </Card>
+      )}
+
+      {listCollection.length !== 0 &&
+        listCollection.map((collection, index) => (
+          <div key={index} className="group">
+            <Card
+              className="transition-all duration-200 hover:shadow-md cursor-pointer"
+            //   onClick={() => {
+            //     navigate('/view?collect_id=' + collection.collectionID)
+            //   }}
             >
-            
-                <Card onClick={() => {
-                    navigate('/view?collect_id='+collection.collectionID)
-                }}>
-                    <CardHeader className="flex">
-                        <CardTitle className="text-sm font-medium text-balance leading-tight">{collection.title}</CardTitle>
-                        {/* <CardDescription>Card Description</CardDescription> */}
-                        {/* <CardAction>Card Action</CardAction> */}
-                        <Button
-                            variant='ghost'
-                            size='sm'
-                            className="p-1 h-auto ml-auto"
-                        >
-                            <Star className="h-4 w-4 text-muted-foreground"/>
-                        </Button>
-                    </CardHeader>
-                    <CardContent>
-                        <p>5 Cards</p>
-                    </CardContent>
-                </Card>
-                {/* {collection.title} */}
-            </div>
-            ))
-        }
-        
+              <div className="px-6">
+                <div className="h-1 w-full rounded bg-accent" />
+              </div>
+              <CardHeader className="flex">
+                <div className="flex items-center gap-3">
+                  <div className="h-9 w-9 rounded-lg bg-secondary flex items-center justify-center">
+                    <Folder className="h-4 w-4 text-muted-foreground" />
+                  </div>
+                  <CardTitle className="text-sm font-semibold leading-tight text-balance">
+                    {collection.title || 'Untitled collection'}
+                  </CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent className="pb-6">
+                
+                <div className="mt-3 flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-1"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      navigate('/view?collect_id=' + collection.collectionID)
+                    }}
+                  >
+                    <Play className="h-4 w-4" /> Study
+                  </Button>
+                  
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        ))}
     </div>
   )
 }

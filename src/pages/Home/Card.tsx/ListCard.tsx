@@ -6,6 +6,7 @@ import { Flashcard } from './EmbeddCard'
 import QueyCard from '@/services/QueyCard'
 import supabase from '@/services/ConnectSupbase'
 import { Button } from '@/components/ui/button'
+import { ArrowLeft } from 'lucide-react'
 const ListCard = () => {
     const [searchParams] = useSearchParams()
     const [loading,setLoading] = useState(false)
@@ -40,22 +41,23 @@ const ListCard = () => {
 
     if (loading) {
         return (
-        <div className='min-h-screen bg-black flex flex-col'>
-        <div className='flex-1 flex items-center justify-center bg-gray-200 text-black'>
-          {/* <img src="/favicon.svg" className="w-8 h-8 rounded-md mr-2"/> */}
-          <div className='text-2xl font-bold flex items-center justify-center'>
-            NOTEPACK
-            <BounceLoader size={20} className='ml-2' color='#4871f7'/> 
+        <div className='min-h-screen bg-gradient-to-br from-background via-muted/30 to-background flex flex-col'>
+          <div className='flex-1 flex items-center justify-center'>
+            <div className='text-2xl font-bold flex items-center justify-center gap-2'>
+              NOTEPACK
+              <BounceLoader size={20} className='ml-2' color='#14b8a6'/> 
+            </div>
           </div>
         </div>
-      </div>
         )
     }
   return (
     <div className='min-h-screen bg-gradient-to-br from-background via-muted/30 to-background p-5'>
         {viewMode !== 'embed' && 
             <Link to='/' className='flex gap-2'>
-                <Button>Turn back</Button>
+                <Button variant='outline' className='gap-2'>
+                  <ArrowLeft className='w-4 h-4'/> Back to home
+                </Button>
             </Link> 
         }
         {currentCardList.length !== 0 && 

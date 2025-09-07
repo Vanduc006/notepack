@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, ChevronRight, Eye, EyeOff, Sun, Moon } from "lucide-react"
+import { ChevronLeft, ChevronRight, Eye, EyeOff, Sun, Moon, Check, X } from "lucide-react"
 
 interface FlashcardData {
   question: string
@@ -19,6 +19,7 @@ export function Flashcard({ cards, className = "" }: FlashcardProps) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isFlipped, setIsFlipped] = useState(false)
   const [isDarkMode, setIsDarkMode] = useState(false)
+  const [knownSet, setKnownSet] = useState<Set<number>>(new Set())
 
   const currentCard = cards[currentIndex]
 
@@ -38,6 +39,20 @@ export function Flashcard({ cards, className = "" }: FlashcardProps) {
 
   const toggleTheme = () => {
     setIsDarkMode(!isDarkMode)
+  }
+
+  const markKnown = () => {
+    setKnownSet(prev => new Set(prev).add(currentIndex))
+    handleNext()
+  }
+
+  const markUnknown = () => {
+    setKnownSet(prev => {
+      const next = new Set(prev)
+      next.delete(currentIndex)
+      return next
+    })
+    handleNext()
   }
 
   useEffect(() => {
@@ -68,12 +83,17 @@ export function Flashcard({ cards, className = "" }: FlashcardProps) {
     )
   }
 
+  const progress = Math.round(((knownSet.size) / cards.length) * 100)
+
   return (
     <div className={`w-full max-w-md mx-auto space-y-4 ${className}`}>
       <div className="flex justify-between items-center">
-        <span className={`text-sm font-medium ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>
-          {currentIndex + 1} of {cards.length}
-        </span>
+        <div className="flex items-center gap-2">
+          <span className={`text-sm font-medium ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>
+            {currentIndex + 1} of {cards.length}
+          </span>
+          <span className={`text-xs px-2 py-0.5 rounded-full ${isDarkMode ? 'bg-gray-700 text-gray-200' : 'bg-accent text-accent-foreground'}`}>{progress}% known</span>
+        </div>
         <Button
           variant="ghost"
           size="sm"
@@ -84,6 +104,10 @@ export function Flashcard({ cards, className = "" }: FlashcardProps) {
         >
           {isDarkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
         </Button>
+      </div>
+
+      <div className={`w-full h-1 rounded-full overflow-hidden ${isDarkMode ? 'bg-gray-800' : 'bg-gray-200'}`}>
+        <div className={`h-full ${isDarkMode ? 'bg-emerald-500' : 'bg-teal-500'}`} style={{ width: `${progress}%` }} />
       </div>
 
       <div className="relative w-full h-80 md:h-64 [perspective:1000px]">
@@ -198,6 +222,29 @@ export function Flashcard({ cards, className = "" }: FlashcardProps) {
           <span className="text-sm font-medium">
             {currentIndex + 1}/{cards.length}
           </span>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={markUnknown}
+            className={`px-3 md:px-2 rounded-full transition-colors ${
+              isDarkMode ? 'hover:bg-gray-700 text-red-300' : 'hover:bg-gray-100 text-red-600'
+            }`}
+          >
+            <X className="w-5 h-5" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={markKnown}
+            className={`px-3 md:px-2 rounded-full transition-colors ${
+              isDarkMode ? 'hover:bg-gray-700 text-emerald-300' : 'hover:bg-gray-100 text-emerald-600'
+            }`}
+          >
+            <Check className="w-5 h-5" />
+          </Button>
         </div>
 
         <Button

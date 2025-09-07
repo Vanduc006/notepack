@@ -128,7 +128,7 @@ const NewCollection = ({userID, onUpdateCollection} : NewCollectionProps) => {
           <DialogHeader>
             <DialogTitle>Creating your new flashcard collection</DialogTitle>
             <DialogDescription>
-              NOTEPACK provide 3 methods for you choose : Normal creating, Creating and connecting Notion, AI intergartion
+              NOTEPACK provides 3 methods for you to choose: normal creating, creating from Notion, or AI integration.
             </DialogDescription>
           </DialogHeader>
 
