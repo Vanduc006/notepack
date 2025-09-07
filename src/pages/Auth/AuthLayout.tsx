@@ -1,4 +1,4 @@
-import supabase from '@/hooks/ConnectSupbase'
+import supabase from '@/services/ConnectSupbase'
 // import React from 'react'
 
 const AuthLayout = () => {

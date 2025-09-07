@@ -9,6 +9,14 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
-    }
-  }
+    },
+    "target": "ESNext",
+    "module": "ESNext",
+    "jsx": "react-jsx",         // <-- bắt buộc cho TSX
+    "strict": true,
+    "noUnusedLocals": true,     // báo lỗi biến khai báo mà không dùng
+    "noUnusedParameters": true, // báo lỗi param không dùng
+    "skipLibCheck": true,
+  },
+  // "include": ["src"]
 }
