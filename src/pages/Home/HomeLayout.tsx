@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import UserMetadata from '@/services/UserMetadata'
 import ListCollection from './Collection/ListCollection'
 import NewCollection from './Collection/NewCollection'
+import { Button } from '@/components/ui/button'
 // import React from 'react'
 
 const HomeLayout = () => {
@@ -45,28 +46,34 @@ const HomeLayout = () => {
   },[userID])
 
   return (
-    <div className='min-h-screen bg-gray-200 w-full p-4'>
-        <div className='mx-auto text-center'>NOTEPACK</div>
-        <div>
-          {userMetadata?.username && 
-            <div>Good day {userMetadata.username}</div>
-          }
+    <div className='min-h-screen bg-gradient-to-br from-background via-muted/30 to-background p-5'>
+        <div className='flex mb-4 gap-2 justify-content items-center'>
+          <div className='text-2xl font-bold text-foreground'>NOTEPACK</div>
+          <div className='ml-auto'>
+            {userMetadata?.username && 
+              <div>Good day {userMetadata.username}</div>
+            }
+          </div>
+          <Button
+          onClick={() => {
+            signOut()
+            // console.log('ok')
+          }}
+          >SignOut</Button>
+
         </div>
+
         {/* <AddPages/> */}
+        <div className='text-xl font-bold text-foreground'>[PACK] FLASHCARD</div>
         {userID && (
-          <>
+          <div className='space-y-2'>
             <NewCollection 
             onUpdateCollection={() => setRefreshList(prev => !prev)}
             userID={userID}/>
             <ListCollection userID={userID} refreshList={refreshList}/>
-          </>
+          </div>
         )}
-        <div className='bg-black' onClick={() => {
-          signOut()
-          // console.log('ok')
-        }}>
-          Signout
-        </div>
+        
     </div>
     
   )

@@ -10,17 +10,20 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"     
 import { Trash2 } from "lucide-react"
 import { Textarea } from "@/components/ui/textarea"
 import QueryCollection from "@/services/QueryCollection"
+import QueyCard from "@/services/QueyCard"
 
 type Card = {
   index : string,
   question : string,
   hint : string,
   answer : string,
+  collectionID : string,
+  userID : string,
 }
 
 type NewCollectionProps = {
@@ -34,7 +37,7 @@ const NewCollection = ({userID, onUpdateCollection} : NewCollectionProps) => {
     // index : 0,
     pageID : null,
     pageURL : null,
-    collectionID : crypto.randomUUID(),
+    collectionID : '',
     userID : userID,
   }
 
@@ -71,32 +74,52 @@ const NewCollection = ({userID, onUpdateCollection} : NewCollectionProps) => {
     };
 
     const handleCreate = async() => {
-        // console.log(currentCollectionMetadata)
+        console.log(newCardList)
+
         setLoadingTask(prev => ({
             ...prev,
             createNewCollection : true
         }))
-
         await QueryCollection('INSERT','',currentCollectionMetadata).then((data) => {
             if (data == 'OK') {
+
+                newCardList.map(async(card) => {
+                  // console.log(card)
+                  await QueyCard('INSERT','user','collection','card',card)
+                })
+
                 setLoadingTask(prev => ({
                     ...prev,
                     createNewCollection : false
                 }))
+
                 setOpeningCollection(false)
                 onUpdateCollection?.()
             }
+            
         })
+
+
+
+        
     }
+
+    useEffect(() => {
+      setCurrentCollectionMetadata(prev => ({
+          ...prev,
+          collectionID : crypto.randomUUID(),
+      }))
+    },[])
 
   return (
     <div>
-      <div 
-        className="text-black cursor-pointer"
+
+      <Button
+        className=""
         onClick={handleOpenningCollection}
       >
         Create new
-      </div>
+      </Button>
 
       <Dialog open={openingColletion} onOpenChange={handleClosingCollection}>
         <DialogContent 
@@ -140,10 +163,12 @@ const NewCollection = ({userID, onUpdateCollection} : NewCollectionProps) => {
 
                     setNewCardList(prev => [
                         {
-                        index: crypto.randomUUID(),
-                        question: "",
-                        hint: "",
-                        answer: ""
+                          index: crypto.randomUUID(),
+                          question: "",
+                          hint: "",
+                          answer: "",
+                          userID : userID,
+                          collectionID : currentCollectionMetadata.collectionID,
                         },
                         ...prev,
 

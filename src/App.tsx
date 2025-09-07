@@ -8,8 +8,10 @@ import supabase from './services/ConnectSupbase'
 import { Navigate , useNavigate} from 'react-router-dom'
 import AuthLayout from './pages/Auth/AuthLayout'
 import BounceLoader from 'react-spinners/BounceLoader'
+import ListCard from './pages/Home/Card.tsx/ListCard'
 
 function ProtectedRoute({ session,children }: {session :any,children: React.ReactNode }) {
+  
   if (!session) {
     // return (
     //   <div className='min-h-screen bg-gray-200 flex flex-col'>
@@ -49,8 +51,12 @@ function App() {
     const {data : {subscription}} = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session)
         if (event === "SIGNED_IN") {
-          navigate("/")     
+          const currentPath = window.location.pathname;
+          if (currentPath === "/auth") {
+            navigate("/"); // chỉ redirect từ /auth
+          }
         }
+        
         if (event === "SIGNED_OUT") {
           navigate("/auth")
         }
@@ -84,6 +90,16 @@ function App() {
             </ProtectedRoute>
           }
         />
+        
+        <Route 
+          path="/view" 
+          element={
+            <ProtectedRoute session={session} >
+              <ListCard />
+            </ProtectedRoute>
+          } 
+        />
+
         <Route path="/auth" element={<AuthLayout />} />
       </Routes>
 
