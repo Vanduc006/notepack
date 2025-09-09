@@ -4,16 +4,42 @@ import { useEffect, useState } from 'react'
 import UserMetadata from '@/services/UserMetadata'
 import ListCollection from './Collection/ListCollection'
 import NewCollection from './Collection/NewCollection'
+import QueryAppUser from '@/services/QueryAppUser'
 // import { Button } from '@/components/ui/button'
 // import { BookOpen } from 'lucide-react'
 // import React from 'react'
-
+type AppUser = {
+  plan : string,
+  quota : string,
+  notion : any,
+  userID : string,
+}
 const HomeLayout = () => {
   
   const signOut = async() => {
     await supabase.auth.signOut()
     console.log('ok')
   }
+
+  const connectNotion = () => {
+    // console.log(import.meta.env.VITE_NOTION_APPID)
+    const clientId = import.meta.env.VITE_NOTION_APPID;
+    const redirectUri = "https://oucuwnsrjwrrydnszkuy.supabase.co/functions/v1/notion-callback";
+    const url = `https://api.notion.com/v1/oauth/authorize?owner=user&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code`;
+    window.location.href = url;
+  };
+
+  // const connectNotion = async () => {
+  //   const { data, error } = await supabase.auth.linkIdentity({
+  //     provider: "notion",
+  //   })
+
+  //   if (error) {
+  //     console.error("Error linking Notion:", error)
+  //     return
+  //   }
+  //   console.log("Linked Notion account:", data)
+  // }
 
   const metadata = {
     username : null,
@@ -26,26 +52,45 @@ const HomeLayout = () => {
   const [userID,setUserID] = useState<string>('')
   const [refreshList, setRefreshList] = useState(false)
   const [isAvatarOpen, setIsAvatarOpen] = useState(false)
+  const [appUser, setAppUser] = useState<AppUser>({
+    plan: "",
+    quota: "",
+    notion: null,
+    userID: ""
+  })
+
   // console.log(refreshList)
   useEffect(() => {
     const getUser = async() => {
       const { data: { session } } = await supabase.auth.getSession()
+      // const { data: { user } } = await supabase.auth.getUser()
+
+      // console.log(user?.identities)
+      // console.log()
       if (session?.user) {
         setUserID(session.user.id)
-        // console.log("UserID from session:", session.user.id) // log trực tiếp ở đây
+        console.log("UserID from session:", session.user.id) // log trực tiếp ở đây
       }
 
       await UserMetadata().then((data) => {
-        console.log(data)
+        // console.log(data)
         setUserMetadata(prev => ({
           ...prev,
           username : data.full_name,
           avatarURL : data.avatar_url,
         }))
+      })      
+    }
+    getUser()
+  },[])
+
+  useEffect(() => {
+    const getAppUser = async() => {
+      await QueryAppUser('FETCH',userID,'').then(data => {
+        setAppUser(data)
       })
     }
-
-    getUser()
+    getAppUser()
   },[userID])
 
   return (
@@ -97,6 +142,29 @@ const HomeLayout = () => {
                     </div>
                   </div>
                   <div className='my-1 h-px bg-border' />
+                  {appUser.notion ? 
+                    <button
+                      className='w-full text-left px-3 py-2 rounded-lg hover:bg-accent text-sm'
+                      onClick={() => {
+                        setIsAvatarOpen(false)
+                        // connectNotion()
+                      }}
+                    >
+                      You are connected to Notion
+                    </button> 
+                    : 
+
+                    <button
+                      className='w-full text-left px-3 py-2 rounded-lg hover:bg-accent text-sm'
+                      onClick={() => {
+                        connectNotion()
+                        setIsAvatarOpen(false)
+
+                      }}
+                    >
+                      Connect to Notion
+                    </button>
+                  }
                   
                   <button
                     className='w-full text-left px-3 py-2 rounded-lg hover:bg-accent text-sm'
@@ -107,6 +175,7 @@ const HomeLayout = () => {
                   >
                     Sign out
                   </button>
+                  
                 </div>
               )}
             </div>

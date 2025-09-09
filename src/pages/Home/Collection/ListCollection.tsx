@@ -42,14 +42,16 @@ type ListCollectionProps = {
 // ]
 
 const ListCollection = ({userID,refreshList} : ListCollectionProps) => {
-
+    const [loading,setLoading] = useState(false)
     const [listCollection,setListCollection] = useState<any[]>([])
     const navigate = useNavigate()
     useEffect(() => {
+        setLoading(true)
         const getList = async() => {
             await QueryCollection('FETCH',userID).then((data) => {
                 if (data) {
                     setListCollection([...data,]) // merge sample + fetched
+                    setLoading(false)
                 }
             })
         }
@@ -58,7 +60,7 @@ const ListCollection = ({userID,refreshList} : ListCollectionProps) => {
 
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-      {listCollection.length === 0 && (
+      {loading && (
         <Card className="col-span-full">
           <CardHeader className="flex">
             <CardTitle className="text-base">Delivering your pack</CardTitle>
@@ -70,6 +72,19 @@ const ListCollection = ({userID,refreshList} : ListCollectionProps) => {
           </CardContent>
         </Card>
       )}
+
+      {!loading && listCollection.length == 0 && (
+        <Card className="col-span-full">
+          <CardHeader className="flex">
+            <CardTitle className="text-base">You're have no pack</CardTitle>
+          </CardHeader>
+          <CardContent className="pb-6 text-sm text-muted-foreground flex items-center gap-1">
+            Let's create new one ?
+
+          </CardContent>
+        </Card>
+      )}
+
 
       {listCollection.length !== 0 &&
         listCollection.map((collection, index) => (

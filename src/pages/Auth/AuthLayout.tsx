@@ -3,9 +3,15 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 
 const AuthLayout = () => {
-    const signUp = async() => {
+    const signUpGoogle = async() => {
         await supabase.auth.signInWithOAuth({
             provider : 'google'
+        })
+    }
+
+    const signUpNotion = async() => {
+        await supabase.auth.signInWithOAuth({
+            provider : 'notion'
         })
     }
   return (
@@ -16,8 +22,12 @@ const AuthLayout = () => {
                 <div className='text-2xl font-semibold tracking-tight'>NOTEPACK</div>
             </div>
             <p className='text-sm text-muted-foreground text-center mb-6'>Sign in to start packing your knowledge.</p>
-            <Button className='w-full' variant='default' onClick={signUp}>
+            <Button className='w-full' variant='default' onClick={signUpGoogle}>
                 Continue with Google
+            </Button>
+
+            <Button className='w-full' variant='default' onClick={signUpNotion}>
+                Continue with Notion
             </Button>
         </Card>
     </div>

@@ -11,6 +11,7 @@ import { Navigate , useNavigate} from 'react-router-dom'
 import AuthLayout from './pages/Auth/AuthLayout'
 import BounceLoader from 'react-spinners/BounceLoader'
 import ListCard from './pages/Home/Card.tsx/ListCard'
+import CallBack from './pages/Auth/CallBack'
 
 function ProtectedRoute({ session,children }: {session :any,children: React.ReactNode }) {
   
@@ -102,7 +103,10 @@ function App() {
           } 
         />
 
+        
+
         <Route path="/auth" element={<AuthLayout />} />
+        <Route path="/notion-call-back" element={<CallBack />} />
 
         {/* Public legal pages for platform review */}
         <Route path="/privacy" element={<Privacy />} />
