@@ -8,12 +8,7 @@ import QueryAppUser from '@/services/QueryAppUser'
 // import { Button } from '@/components/ui/button'
 // import { BookOpen } from 'lucide-react'
 // import React from 'react'
-type AppUser = {
-  plan : string,
-  quota : string,
-  notion : any,
-  userID : string,
-}
+
 const HomeLayout = () => {
   
   const signOut = async() => {
@@ -52,10 +47,10 @@ const HomeLayout = () => {
   const [userID,setUserID] = useState<string>('')
   const [refreshList, setRefreshList] = useState(false)
   const [isAvatarOpen, setIsAvatarOpen] = useState(false)
-  const [appUser, setAppUser] = useState<AppUser>({
+  const [appUser, setAppUser] = useState({
     plan: "",
     quota: "",
-    notion: null,
+    notion_refresh_token : "",
     userID: ""
   })
 
@@ -142,7 +137,7 @@ const HomeLayout = () => {
                     </div>
                   </div>
                   <div className='my-1 h-px bg-border' />
-                  {appUser.notion ? 
+                  {appUser.notion_refresh_token !== "" ? 
                     <button
                       className='w-full text-left px-3 py-2 rounded-lg hover:bg-accent text-sm'
                       onClick={() => {
@@ -152,6 +147,7 @@ const HomeLayout = () => {
                     >
                       You are connected to Notion
                     </button> 
+
                     : 
 
                     <button

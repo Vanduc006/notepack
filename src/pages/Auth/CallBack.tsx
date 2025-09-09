@@ -50,6 +50,7 @@ const CallBack = () => {
                   notion_refresh_token : searchParams.get('notion_refresh_token') ?? "",
                   notion_workspace_id : searchParams.get('notion_workspace_id') ?? "",
                   notion_workspace_name : searchParams.get('notion_workspace_name') ?? "",
+                  // notion : true,
                 })
                 console.log("UserID from session:", session.user.id) // log trực tiếp ở đây
                 navigate('/')
