@@ -137,7 +137,7 @@ const HomeLayout = () => {
                     </div>
                   </div>
                   <div className='my-1 h-px bg-border' />
-                  {appUser.notion_refresh_token !== "" ? 
+                  {appUser.notion_refresh_token !== null ? 
                     <button
                       className='w-full text-left px-3 py-2 rounded-lg hover:bg-accent text-sm'
                       onClick={() => {
