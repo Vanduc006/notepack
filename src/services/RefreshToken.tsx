@@ -1,6 +1,8 @@
 // import React from 'react'
 
-const RefreshToken = async(refreshToken : string | null) => {
+const RefreshToken = async(
+  // refreshToken : string | null
+) => {
   const clientID = import.meta.env.VITE_NOTION_APPID
   const secret = import.meta.env.VITE_NOTION_SECRET
   const encode = btoa(`${clientID} : ${secret}`)
