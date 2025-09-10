@@ -7,6 +7,19 @@ const QueryCollection = async(
     playload ?: any,
 ):Promise<any> => {
   switch (statement) {
+
+    case 'UPDATE' : {
+      const {error} = await supabase
+      .from('collection')
+      .update(playload)
+      .eq('userID',userID)
+      
+      if (error) {
+        return error
+      }
+      return 'OK'
+    }
+
     case 'FETCH': {
       if (!userID) {
         // throw new Error("userID is required for FETCH")
@@ -16,6 +29,8 @@ const QueryCollection = async(
         .from('collection')
         .select('*')
         .eq('userID', userID)
+        .order("created_at", { ascending: false})
+
 
       if (error) {
         console.error("FETCH error:", error)

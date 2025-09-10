@@ -10,14 +10,14 @@ const QueyCard = async(
 ):Promise<any> => {
   switch (statement) {
     case 'FETCH': {
-      if (!userID) {
-        // throw new Error("userID is required for FETCH")
-        return
-      }
+      // if (!userID) {
+      //   // throw new Error("userID is required for FETCH")
+      //   return
+      // }
       const { data, error } = await supabase
         .from('card')
         .select('*')
-        .eq('userID', userID)
+        // .eq('userID', userID)
         .eq('collectionID', collectionID)
         .order("created_at", { ascending: false})
 

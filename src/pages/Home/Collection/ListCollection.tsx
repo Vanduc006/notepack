@@ -58,6 +58,14 @@ const ListCollection = ({userID,refreshList} : ListCollectionProps) => {
         getList()
     },[userID,refreshList])
 
+    // const handleEdit = async(payload : any) => {
+    //   await QueryCollection('UPDATE',userID,payload).then(data => {
+    //     if (data == 'OK') {
+          
+    //     }
+    //   })
+    // }
+
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {loading && (
@@ -117,7 +125,7 @@ const ListCollection = ({userID,refreshList} : ListCollectionProps) => {
                     className="gap-1"
                     onClick={(e) => {
                       e.stopPropagation()
-                      navigate('/view?collect_id=' + collection.collectionID)
+                      navigate(`/view?vm=on_page&collect_id=${collection.collectionID}`)
                     }}
                   >
                     <Play className="h-4 w-4" /> Study

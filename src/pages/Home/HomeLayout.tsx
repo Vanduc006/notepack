@@ -5,6 +5,8 @@ import UserMetadata from '@/services/UserMetadata'
 import ListCollection from './Collection/ListCollection'
 import NewCollection from './Collection/NewCollection'
 import QueryAppUser from '@/services/QueryAppUser'
+import { Button } from '@/components/ui/button'
+import RefreshToken from '@/services/RefreshToken'
 // import { Button } from '@/components/ui/button'
 // import { BookOpen } from 'lucide-react'
 // import React from 'react'
@@ -50,9 +52,15 @@ const HomeLayout = () => {
   const [appUser, setAppUser] = useState({
     plan: "",
     quota: "",
-    notion_refresh_token : "",
+    notion_refresh_token : null,
     userID: ""
   })
+
+  const getNotionAccess = async() => {
+    await RefreshToken(appUser.notion_refresh_token).then(data => {
+      console.log(data)
+    })
+  }
 
   // console.log(refreshList)
   useEffect(() => {
@@ -137,7 +145,7 @@ const HomeLayout = () => {
                     </div>
                   </div>
                   <div className='my-1 h-px bg-border' />
-                  {appUser.notion_refresh_token !== null ? 
+                  {appUser.notion_refresh_token == '' ? 
                     <button
                       className='w-full text-left px-3 py-2 rounded-lg hover:bg-accent text-sm'
                       onClick={() => {
@@ -145,7 +153,7 @@ const HomeLayout = () => {
                         // connectNotion()
                       }}
                     >
-                      You are connected to Notion
+                      You are connected to Notion {appUser.notion_refresh_token}
                     </button> 
 
                     : 
@@ -190,6 +198,12 @@ const HomeLayout = () => {
             <ListCollection userID={userID} refreshList={refreshList}/>
           </div>
         )}
+
+        <Button className='mt-2'
+        onClick={() => {
+          getNotionAccess()
+        }}
+        >Get Token</Button>
 
         {/* <div className='text-xl font-semibold my-2 opacity-50'>[COMMING SOON] ANNOTATION CARD</div> */}
 

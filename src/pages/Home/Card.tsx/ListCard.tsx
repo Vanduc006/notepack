@@ -11,7 +11,7 @@ const ListCard = () => {
     const [searchParams] = useSearchParams()
     const [loading,setLoading] = useState(false)
     const [currentCardList,setCurrentCardList] = useState([])
-    // const [userID,setUserID] = useState<string>('')
+    const [userID,setUserID] = useState<string>('')
     // const [collectionID,setCollectionID] = useState<string | null>('')
     // const collectionID= searchParams.get('collect_id')
     // console.log(collectionID)
@@ -21,14 +21,15 @@ const ListCard = () => {
             setLoading(true)
             const { data: { session } } = await supabase.auth.getSession()
             if (!session?.user) return
-            const uid = session.user.id
+            // const uid = session.user.id
+            setUserID(session.user.id)
             const cid = searchParams.get('collect_id')
             const vm = searchParams.get('vm')
             setViewMode(vm)
             // setUserID(uid)
             // setCollectionID(cid)
 
-            await QueyCard('FETCH', uid, cid).then(data => {
+            await QueyCard('FETCH','', cid).then(data => {
                 // setCurrentCardList(data)
                 setCurrentCardList(data || [])
                 setLoading(false)
@@ -53,7 +54,7 @@ const ListCard = () => {
     }
   return (
     <div className='min-h-screen bg-gradient-to-br from-background via-muted/30 to-background p-5'>
-        {viewMode !== 'embed' && 
+        {viewMode == 'on_page' && userID &&
             <Link to='/' className='flex gap-2'>
                 <Button variant='outline' className='gap-2'>
                   <ArrowLeft className='w-4 h-4'/> Back to home
