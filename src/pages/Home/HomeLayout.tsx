@@ -7,6 +7,7 @@ import NewCollection from './Collection/NewCollection'
 import QueryAppUser from '@/services/QueryAppUser'
 import { Button } from '@/components/ui/button'
 import RefreshToken from '@/services/RefreshToken'
+import { LogOut } from 'lucide-react'
 // import { Button } from '@/components/ui/button'
 // import { BookOpen } from 'lucide-react'
 // import React from 'react'
@@ -116,7 +117,7 @@ const HomeLayout = () => {
               </button>
 
               {isAvatarOpen && (
-                <div className='absolute right-0 mt-2 w-56 rounded-xl border bg-card shadow-md p-2 z-10'>
+                <div className='absolute right-0 mt-2 w-56 rounded-xl border bg-card shadow-md p-2 z-[1000]'>
                   <div className='flex items-center gap-3 p-2'>
                     <div className='h-9 w-9 rounded-full overflow-hidden border bg-secondary flex items-center justify-center'>
                       {userMetadata.avatarURL ? (
@@ -131,7 +132,16 @@ const HomeLayout = () => {
                       <div className='text-sm font-medium truncate'>{userMetadata.username || 'User'}</div>
                       <div className='text-xs text-muted-foreground truncate'>Signed in</div>
                     </div>
+
+                    <Button className='ml-auto ' 
+                    onClick={() => {
+                      setIsAvatarOpen(false)
+                      signOut()
+                    }}>
+                      <LogOut className="w-4 h-4"/>
+                    </Button>
                   </div>
+
                   <div className='my-1 h-px bg-border' />
                   {appUser.notion_refresh_token !== '' ? 
                     <button
@@ -158,15 +168,12 @@ const HomeLayout = () => {
                     </button>
                   }
                   
-                  <button
+                  {/* <button
                     className='w-full text-left px-3 py-2 rounded-lg hover:bg-accent text-sm'
-                    onClick={() => {
-                      setIsAvatarOpen(false)
-                      signOut()
-                    }}
+                    
                   >
                     Sign out
-                  </button>
+                  </button> */}
                   
                 </div>
               )}
@@ -177,7 +184,7 @@ const HomeLayout = () => {
         </div>
 
         {/* <AddPages/> */}
-        <div className='text-xl font-semibold mb-2'>[PACK] FLASHCARD</div>
+        <div className='text-xl font-semibold mb-2 mt-10'>[PACK] FLASHCARD</div>
         {userID && (
           <div className='space-y-2'>
             <NewCollection 

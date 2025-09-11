@@ -13,13 +13,17 @@ interface FlashcardData {
 interface FlashcardProps {
   cards: FlashcardData[]
   className?: string
+  onThemeChange?: (isDark: boolean) => void
 }
 
-export function Flashcard({ cards, className = "" }: FlashcardProps) {
+export function Flashcard({ cards, className = "", onThemeChange }: FlashcardProps) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isFlipped, setIsFlipped] = useState(false)
   const [isDarkMode, setIsDarkMode] = useState(false)
   const [knownSet, setKnownSet] = useState<Set<number>>(new Set())
+  const [touchStartX, setTouchStartX] = useState<number | null>(null)
+  const [mouseStartX, setMouseStartX] = useState<number | null>(null)
+  const [isMouseDown, setIsMouseDown] = useState(false)
 
   const currentCard = cards[currentIndex]
 
@@ -71,6 +75,46 @@ export function Flashcard({ cards, className = "" }: FlashcardProps) {
     }
   }, [currentIndex, cards.length])
 
+  useEffect(() => {
+    onThemeChange?.(isDarkMode)
+  }, [isDarkMode, onThemeChange])
+
+  const swipeThreshold = 50
+  const onTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    setTouchStartX(e.touches[0].clientX)
+  }
+  const onTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    // noop for now; could add visual drag
+    console.log(e)
+  }
+  const onTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (touchStartX === null) return
+    const delta = (e.changedTouches[0]?.clientX ?? touchStartX) - touchStartX
+    if (Math.abs(delta) > swipeThreshold) {
+      if (delta < 0) handleNext(); else handlePrevious()
+    }
+    setTouchStartX(null)
+  }
+
+  const onMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    setIsMouseDown(true)
+    setMouseStartX(e.clientX)
+  }
+  const onMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    // noop; could add visual drag
+    console.log(e)
+  }
+  const endMouse = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!isMouseDown) return
+    setIsMouseDown(false)
+    if (mouseStartX === null) return
+    const delta = e.clientX - mouseStartX
+    if (Math.abs(delta) > swipeThreshold) {
+      if (delta < 0) handleNext(); else handlePrevious()
+    }
+    setMouseStartX(null)
+  }
+
   if (!cards || cards.length === 0) {
     return (
       <div className={`w-full max-w-md mx-auto ${className}`}>
@@ -110,7 +154,16 @@ export function Flashcard({ cards, className = "" }: FlashcardProps) {
         <div className={`h-full ${isDarkMode ? 'bg-emerald-500' : 'bg-teal-500'}`} style={{ width: `${progress}%` }} />
       </div>
 
-      <div className="relative w-full h-80 md:h-64 [perspective:1000px]">
+      <div
+        className="relative w-full h-80 md:h-64 [perspective:1000px]"
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+        onMouseDown={onMouseDown}
+        onMouseMove={onMouseMove}
+        onMouseUp={endMouse}
+        onMouseLeave={endMouse}
+      >
         <div
           className={`relative w-full h-full cursor-pointer transition-transform duration-700 [transform-style:preserve-3d] ${
             isFlipped ? "[transform:rotateY(180deg)]" : "[transform:rotateY(0deg)]"

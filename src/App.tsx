@@ -1,6 +1,6 @@
 import { useEffect, useState} from 'react'
 import './index.css'
-import { Route, Routes, Link } from 'react-router-dom'
+import { Route, Routes} from 'react-router-dom'
 import Privacy from './pages/Legal/Privacy'
 import Terms from './pages/Legal/Terms'
 import HomeLayout from './pages/Home/HomeLayout'
@@ -105,7 +105,7 @@ function App() {
         <Route path="/terms" element={<Terms />} />
       </Routes>
 
-      <footer className='mt-10 border-t'>
+      {/* <footer className='mt-10 border-t'>
         <div className='max-w-5xl mx-auto px-4 py-6 text-xs text-muted-foreground flex flex-col sm:flex-row gap-2 sm:gap-4 items-center justify-center'>
           <div>© {new Date().getFullYear()} NOTEPACK</div>
           <div className='flex items-center gap-4'>
@@ -113,7 +113,7 @@ function App() {
             <Link to="/terms" className='hover:text-foreground'>Terms</Link>
           </div>
         </div>
-      </footer>
+      </footer> */}
     </>
   )
 }

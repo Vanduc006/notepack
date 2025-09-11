@@ -16,6 +16,12 @@ const ListCard = () => {
     // const collectionID= searchParams.get('collect_id')
     // console.log(collectionID)
     const [viewMode,setViewMode] = useState<string | null>('')
+    const [darkFromChild,setDarkFromChild] = useState<boolean | null>(null)
+    const bgClass = darkFromChild === null
+      ? 'bg-gradient-to-br from-background via-muted/30 to-background'
+      : darkFromChild
+        ? 'bg-[#0b0b0b]'
+        : 'bg-white'
     useEffect(() => {
         const fetchCard = async () => {
             setLoading(true)
@@ -53,8 +59,9 @@ const ListCard = () => {
         </div>
         )
     }
+
   return (
-    <div className='min-h-screen bg-gradient-to-br from-background via-muted/30 to-background p-5'>
+    <div className={`min-h-screen ${bgClass} p-5`}>
         {viewMode == 'on_page' && userID &&
             <Link to='/' className='flex gap-2'>
                 <Button variant='outline' className='gap-2'>
@@ -63,7 +70,7 @@ const ListCard = () => {
             </Link> 
         }
         {currentCardList.length !== 0 && 
-            <Flashcard cards={currentCardList} />
+            <Flashcard cards={currentCardList} onThemeChange={(d) => setDarkFromChild(d)} />
         }        
     </div>
   )
