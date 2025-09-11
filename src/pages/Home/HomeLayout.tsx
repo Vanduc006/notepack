@@ -26,18 +26,6 @@ const HomeLayout = () => {
     window.location.href = url;
   };
 
-  // const connectNotion = async () => {
-  //   const { data, error } = await supabase.auth.linkIdentity({
-  //     provider: "notion",
-  //   })
-
-  //   if (error) {
-  //     console.error("Error linking Notion:", error)
-  //     return
-  //   }
-  //   console.log("Linked Notion account:", data)
-  // }
-
   const metadata = {
     username : null,
     email : null,
@@ -90,7 +78,7 @@ const HomeLayout = () => {
   useEffect(() => {
     const getAppUser = async() => {
       await QueryAppUser('FETCH',userID,'').then(data => {
-        setAppUser(data)
+        setAppUser(data[0])
       })
     }
     getAppUser()
@@ -145,7 +133,7 @@ const HomeLayout = () => {
                     </div>
                   </div>
                   <div className='my-1 h-px bg-border' />
-                  {appUser.notion_refresh_token == '' ? 
+                  {appUser.notion_refresh_token !== '' ? 
                     <button
                       className='w-full text-left px-3 py-2 rounded-lg hover:bg-accent text-sm'
                       onClick={() => {
@@ -153,7 +141,7 @@ const HomeLayout = () => {
                         // connectNotion()
                       }}
                     >
-                      You are connected to Notion {appUser.notion_refresh_token}
+                      You are connected to Notion
                     </button> 
 
                     : 
