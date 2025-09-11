@@ -100,7 +100,7 @@ const HomeLayout = () => {
 
             </div>
 
-            <div className='relative'>
+            <div className='relative z-auto'>
               <button
                 onClick={() => setIsAvatarOpen(prev => !prev)}
                 className='h-9 w-9 rounded-full overflow-hidden border bg-secondary flex items-center justify-center'

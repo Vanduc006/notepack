@@ -94,17 +94,9 @@ function App() {
           }
         />
         
-        <Route 
-          path="/view" 
-          element={
-            <ProtectedRoute session={session} >
-              <ListCard />
-            </ProtectedRoute>
-          } 
-        />
 
         
-
+        <Route path="/view" element={<ListCard />} />
         <Route path="/auth" element={<AuthLayout />} />
         <Route path="/notion-call-back" element={<CallBack />} />
 
