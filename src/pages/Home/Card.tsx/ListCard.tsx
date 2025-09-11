@@ -20,9 +20,10 @@ const ListCard = () => {
         const fetchCard = async () => {
             setLoading(true)
             const { data: { session } } = await supabase.auth.getSession()
-            if (!session?.user) return
+            if (session?.user) {
+              setUserID(session.user.id)
+            }
             // const uid = session.user.id
-            setUserID(session.user.id)
             const cid = searchParams.get('collect_id')
             const vm = searchParams.get('vm')
             setViewMode(vm)
