@@ -43,7 +43,8 @@ const EmbeddCollection = async(page_id : string, collectionID : string,userID : 
     }
     )
     const data = await respone.json()
-    return data || ""
+    console.log(data)
+    return data.results[0].id || ""
 
     // var myHeaders = new Headers();
     // myHeaders.append("Authorization", "Bearer" + accessToken);

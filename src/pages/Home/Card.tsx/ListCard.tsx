@@ -23,6 +23,7 @@ const ListCard = () => {
         ? 'bg-[#0b0b0b]'
         : 'bg-white'
     useEffect(() => {
+       document.title = "FLASHCARD | NOTEPACK"
         const fetchCard = async () => {
             setLoading(true)
             const { data: { session } } = await supabase.auth.getSession()

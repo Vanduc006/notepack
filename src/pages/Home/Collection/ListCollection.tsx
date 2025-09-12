@@ -12,7 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Play, Edit, Trash2, Calendar, Hash, ArrowRight } from "lucide-react"
+import { Play, Edit, Trash2, Calendar, Hash, ArrowRight, Link2 } from "lucide-react"
 import { useNavigate } from 'react-router-dom'
 import BounceLoader from 'react-spinners/BounceLoader'
 import {
@@ -58,10 +58,11 @@ const ListCollection = ({ userID, refreshList }: ListCollectionProps) => {
   const [loading, setLoading] = useState(false)
   const [listCollection, setListCollection] = useState<any[]>([])
   const navigate = useNavigate()
+
   useEffect(() => {
     setLoading(true)
     const getList = async () => {
-      await QueryCollection('FETCH', userID).then((data) => {
+      await QueryCollection('FETCH','',userID).then((data) => {
         if (data) {
           setListCollection([...data,]) // merge sample + fetched
           setLoading(false)
@@ -70,6 +71,7 @@ const ListCollection = ({ userID, refreshList }: ListCollectionProps) => {
     }
     getList()
   }, [userID, refreshList])
+
 
   const collectionDialog = {
     current_selected_collection_id : "",
@@ -106,6 +108,19 @@ const ListCollection = ({ userID, refreshList }: ListCollectionProps) => {
     }
     else return
   }
+ 
+  const updateClientsCollection = (pageID : string,notion_block_id : any[]) => {
+    setListCollection(prev => (
+      prev.map(collection => 
+        collection.collectionID === collectionDialogState.current_selected_collection_id ? 
+        {...collection, 
+          pageID : pageID, 
+          pageURL : collectionDialogState.emebed_notion_page_url,
+          notion_block_id : notion_block_id,
+         } : collection,
+      )
+    ))
+  }
 
   const handleEmbed = async() => {
     const pageID = getPageID()
@@ -115,10 +130,17 @@ const ListCollection = ({ userID, refreshList }: ListCollectionProps) => {
     }
     console.log(pageID)
 
-    await EmbeddCollection(pageID,collectionDialogState.current_selected_collection_id,userID).then(data => {
-      console.log(data)
+    const data = await EmbeddCollection(pageID,collectionDialogState.current_selected_collection_id,userID)
+    await QueryCollection('UPDATE',collectionDialogState.current_selected_collection_id,userID,{
+      pageID : pageID,
+      pageURL : collectionDialogState.emebed_notion_page_url,
+      notion_block_id : data,
     })
+
+    updateClientsCollection(pageID,data)
   }
+
+
 
   // const handleEdit = async(payload : any) => {
   //   await QueryCollection('UPDATE',userID,payload).then(data => {
@@ -168,8 +190,21 @@ const ListCollection = ({ userID, refreshList }: ListCollectionProps) => {
                     {collection.title}
                   </h3>
 
+                  {collection.notion_block_id &&
+                  <a
+                  
+                  href={collection.pageURL} 
+                  target="_blank"
+                  // onClick={() => window.location.href(collection.pageURL as String)}
+                  className="ml-2 p-1 bg-secondary rounded-md flex items-center text-xs gap-1  ">
+                    <Link2 className="w-4 h-4"/>
+                  </a>
+                  }
+
+
                   <div className="flex items-center ml-auto gap-1">
                     <div className="p-1 bg-green-500 rounded-md">
+                      
                       <Edit className="w-4 h-4 text-white" />
                     </div>
 
@@ -212,6 +247,7 @@ const ListCollection = ({ userID, refreshList }: ListCollectionProps) => {
                 </div>
 
                 <div className="mt-3 flex items-center gap-2 sm:ml-auto m-0">
+                  {!collection.notion_block_id &&
                   <Button
                     variant="outline"
                     size="sm"
@@ -220,6 +256,7 @@ const ListCollection = ({ userID, refreshList }: ListCollectionProps) => {
                   >
                     Add to Notion Page
                   </Button>
+                  }
 
                 </div>
               </div>

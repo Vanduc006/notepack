@@ -11,48 +11,68 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { useEffect, useState } from "react"
-import { Button } from "@/components/ui/button"     
+import { Button } from "@/components/ui/button"
 import { Trash2 } from "lucide-react"
 import { Textarea } from "@/components/ui/textarea"
 import QueryCollection from "@/services/QueryCollection"
 import QueyCard from "@/services/QueyCard"
+import EmbeddCollection from "./EmbeddCollection"
+// import { title } from "process"
+// import RefreshToken from "@/services/RefreshToken"
 
 type Card = {
-  index : string,
-  question : string,
-  hint : string,
-  answer : string,
-  collectionID : string,
-  userID : string,
+  index: string,
+  question: string,
+  hint: string,
+  answer: string,
+  collectionID: string,
+  userID: string,
 }
 
 type NewCollectionProps = {
-    userID : string,
-    onUpdateCollection : () => void
+  refreshToken: string | null,
+  userID: string,
+  onUpdateCollection: () => void
 }
 
-const NewCollection = ({userID, onUpdateCollection} : NewCollectionProps) => {
+interface CollectionMetadata {
+  title: string
+  pageID: string
+  pageURL: string
+  collectionID: string
+  userID: string
+  notion_block_id: string | string[] | null
+}
+
+const NewCollection = ({ refreshToken, userID, onUpdateCollection }: NewCollectionProps) => {
   const CollectionMetadata = {
-    title : '',
+    title: '',
     // index : 0,
-    pageID : null,
-    pageURL : null,
-    collectionID : '',
-    userID : userID,
+    pageID: "",
+    pageURL: "",
+    collectionID: '',
+    userID: userID,
+    notion_block_id: null,
   }
 
   const Loading = {
-    createNewCollection : false,
+    createNewCollection: false,
 
   }
 
-  const [openingColletion,setOpeningCollection] = useState(false)
-  const [newCardList,setNewCardList] = useState<Card[]>([])
-  const [currentCollectionMetadata,setCurrentCollectionMetadata] = useState(CollectionMetadata)
-  const [loadingTask,setLoadingTask] = useState(Loading)
-//   const [currenIndex,setCurrentIndex] = useState<number>(0)
-//   const [currentTile,setCurrentTitle] = useState<string>('')
-//   const [current]
+  const [openingColletion, setOpeningCollection] = useState(false)
+  const [newCardList, setNewCardList] = useState<Card[]>([])
+  const [currentCollectionMetadata, setCurrentCollectionMetadata] = useState<CollectionMetadata>(CollectionMetadata)
+  const [loadingTask, setLoadingTask] = useState(Loading)
+  // const [currentRefreshToken,setCurrentRefreshToken] = useState("")
+
+  const collectionNotion = {
+    connect_notion_url: "",
+  }
+  const [collectionNotionState, setCollectionNotionState] = useState(collectionNotion)
+  //   const [currenIndex,setCurrentIndex] = useState<number>(0)
+  //   const [currentTile,setCurrentTitle] = useState<string>('')
+  //   const [current]
 
 
   const handleClosingCollection = () => {
@@ -62,54 +82,128 @@ const NewCollection = ({userID, onUpdateCollection} : NewCollectionProps) => {
     setOpeningCollection(true)
   }
 
-  const handleInputChange = (index ?: string, field ?: keyof Card, value ?: string) => {
-    setNewCardList(prev => 
-        prev.map(card => 
-            card.index === index ? {...card, [field as string] : value} : card
-        )
+  const handleInputChange = (index?: string, field?: keyof Card, value?: string) => {
+    setNewCardList(prev =>
+      prev.map(card =>
+        card.index === index ? { ...card, [field as string]: value } : card
+      )
     )
   }
+
   const handleRemoveCard = (id: string) => {
     setNewCardList(prev => prev.filter(card => card.index !== id));
-    };
+  };
 
-    const handleCreate = async() => {
-        console.log(newCardList)
+  const handleCreate = async (type: string) => {
 
+    setLoadingTask(prev => ({
+      ...prev,
+      createNewCollection: true
+    }))
+
+    if (type == "notion") {
+      const pageID = getPageID()
+      if (!pageID) {
+        alert("Wrong URL or clients error")
         setLoadingTask(prev => ({
-            ...prev,
-            createNewCollection : true
+          ...prev,
+          createNewCollection: false
         }))
-        await QueryCollection('INSERT','',currentCollectionMetadata).then((data) => {
-            if (data == 'OK') {
 
-                newCardList.map(async(card) => {
-                  // console.log(card)
-                  await QueyCard('INSERT','user','collection','card',card)
-                })
+        setOpeningCollection(false)
+        return
+      }
+      console.log(newCardList)
 
-                setLoadingTask(prev => ({
-                    ...prev,
-                    createNewCollection : false
-                }))
+      const data = await EmbeddCollection(pageID, currentCollectionMetadata.collectionID, userID)
 
-                setOpeningCollection(false)
-                onUpdateCollection?.()
-            }
-            
-        })
+      const insertData = {
+        title: currentCollectionMetadata.title,
+        pageID: pageID,
+        pageURL: collectionNotionState.connect_notion_url,
+        collectionID: currentCollectionMetadata.collectionID,
+        userID: userID,
+        notion_block_id: data,
+      }
+      await QueryCollection('INSERT', '', '', insertData).then((data) => {
+        if (data == 'OK') {
 
+          newCardList.map(async (card) => {
+            // console.log(card)
+            await QueyCard('INSERT', 'user', 'collection', 'card', card)
+          })
 
+          setLoadingTask(prev => ({
+            ...prev,
+            createNewCollection: false
+          }))
 
-        
+          setOpeningCollection(false)
+          onUpdateCollection?.()
+        }
+
+      })
     }
 
-    useEffect(() => {
-      setCurrentCollectionMetadata(prev => ({
-          ...prev,
-          collectionID : crypto.randomUUID(),
-      }))
-    },[])
+    if (type == "normal") {
+      const insertData = {
+        title: currentCollectionMetadata.title,
+        pageID: "",
+        pageURL: "",
+        collectionID: currentCollectionMetadata.collectionID,
+        userID: userID,
+        notion_block_id: "",
+      }
+
+      await QueryCollection('INSERT', '', '', insertData).then((data) => {
+        if (data == 'OK') {
+
+          newCardList.map(async (card) => {
+            // console.log(card)
+            await QueyCard('INSERT', 'user', 'collection', 'card', card)
+          })
+
+          setLoadingTask(prev => ({
+            ...prev,
+            createNewCollection: false
+          }))
+
+          setOpeningCollection(false)
+          onUpdateCollection?.()
+        }
+
+      })
+    }
+
+    // setCurrentCollectionMetadata(prev => ({
+    //   ...prev,
+    //   pageID : pageID,
+    //   pageURL : collectionNotionState.connect_notion_url,
+    //   notion_block_id : data,
+    // }))
+
+
+  }
+
+  const getPageID = () => {
+    const url = collectionNotionState.connect_notion_url
+    const match = url.match(/-([0-9a-f]{32})(?:\?|$)/);
+    if (match) {
+      return match[1]
+    }
+    else return
+  }
+  // const handleNotionConnect = async() => {
+  //   const data = await RefreshToken(userID)
+  //   console.log(data)
+  // }
+
+  useEffect(() => {
+    setCurrentCollectionMetadata(prev => ({
+      ...prev,
+      collectionID: crypto.randomUUID(),
+    }))
+  }, [])
 
   return (
     <div>
@@ -122,7 +216,7 @@ const NewCollection = ({userID, onUpdateCollection} : NewCollectionProps) => {
       </Button>
 
       <Dialog open={openingColletion} onOpenChange={handleClosingCollection}>
-        <DialogContent 
+        <DialogContent
           className="[&>button[data-radix-dialog-close]]:hidden w-full max-w-[95vw] sm:max-w-lg"
         >
           <DialogHeader>
@@ -141,13 +235,13 @@ const NewCollection = ({userID, onUpdateCollection} : NewCollectionProps) => {
 
             <TabsContent value="normal" className="space-y-2 w-full rounded-ld">
               <Label>Title of collection</Label>
-              <Input className="w-full" value={currentCollectionMetadata.title} 
-              onChange={(e) => {
-                setCurrentCollectionMetadata(prev => ({
+              <Input className="w-full" value={currentCollectionMetadata.title}
+                onChange={(e) => {
+                  setCurrentCollectionMetadata(prev => ({
                     ...prev,
-                    title : e.target.value,
-                }))
-              }}/>
+                    title: e.target.value,
+                  }))
+                }} />
 
               <div className="flex flex-col sm:flex-row gap-2">
                 <Button
@@ -162,15 +256,15 @@ const NewCollection = ({userID, onUpdateCollection} : NewCollectionProps) => {
                     // }
 
                     setNewCardList(prev => [
-                        {
-                          index: crypto.randomUUID(),
-                          question: "",
-                          hint: "",
-                          answer: "",
-                          userID : userID,
-                          collectionID : currentCollectionMetadata.collectionID,
-                        },
-                        ...prev,
+                      {
+                        index: crypto.randomUUID(),
+                        question: "",
+                        hint: "",
+                        answer: "",
+                        userID: userID,
+                        collectionID: currentCollectionMetadata.collectionID,
+                      },
+                      ...prev,
 
                     ])
                     // setCurrentCollectionMetadata((prev) => ({
@@ -185,76 +279,208 @@ const NewCollection = ({userID, onUpdateCollection} : NewCollectionProps) => {
 
               {newCardList.length !== 0 && (
                 <div className="max-h-[300px] overflow-y-auto space-y-2">
-                  {newCardList.map((card,i) => (
-                    <div 
-                      key={card.index} 
-                    //   className="space-y-2"
+                  {newCardList.map((card, i) => (
+                    <div
+                      key={card.index}
+                      //   className="space-y-2"
                       className="p-3 space-y-2 rounded-lg border bg-gray-50 text-sm sm:text-base"
                     >
-                        <div className="flex"
+                      <div className="flex"
                         onClick={() => handleRemoveCard(card.index)}>
-                            <Label>Card {newCardList.length - i}</Label>
-                            <div className="ml-auto p-1 bg-red-400 rounded-md flex text-white">
+                        <Label>Card {newCardList.length - i}</Label>
+                        <div className="ml-auto p-1 bg-red-400 rounded-md flex text-white">
 
-                                <Trash2 className="w-4 h-4 text-white"/>
-                            </div>
+                          <Trash2 className="w-4 h-4 text-white" />
                         </div>
-                        <Textarea
-                            value={card.question}
-                            onChange={(e) => {
-                                handleInputChange(card.index, "question", e.target.value)
-                            }}
-                            required placeholder="Question here" 
-                            className="min-h-[40px] max-h-[150px] overflow-y-auto"/>
-                        <Textarea 
-                            value={card.answer}
-                            onChange={(e) => {
-                                handleInputChange(card.index,"answer", e.target.value)
-                            }}
-                            required placeholder="Answer here" 
-                            className="min-h-[40px] max-h-[150px] overflow-y-auto"/>
-                        {/* <Input required placeholder="Question here"></Input>
+                      </div>
+                      <Textarea
+                        value={card.question}
+                        onChange={(e) => {
+                          handleInputChange(card.index, "question", e.target.value)
+                        }}
+                        required placeholder="Question here"
+                        className="min-h-[40px] max-h-[150px] overflow-y-auto" />
+                      <Textarea
+                        value={card.answer}
+                        onChange={(e) => {
+                          handleInputChange(card.index, "answer", e.target.value)
+                        }}
+                        required placeholder="Answer here"
+                        className="min-h-[40px] max-h-[150px] overflow-y-auto" />
+                      {/* <Input required placeholder="Question here"></Input>
                         <Input required placeholder="Answer here"></Input> */}
-                        <Input 
+                      <Input
                         value={card.hint}
                         onChange={(e) => {
-                            handleInputChange(card.index, "hint", e.target.value)
+                          handleInputChange(card.index, "hint", e.target.value)
                         }}
                         placeholder="Hint (optional)"></Input>
                     </div>
                   ))}
                 </div>
               )}
+
+              <DialogFooter className="flex flex-col sm:flex-row gap-2">
+                <button
+                  onClick={() => setOpeningCollection(false)}
+                  className="w-full sm:w-auto px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  disabled={loadingTask.createNewCollection}
+                  onClick={() => {
+                    // console.log(newCardList)
+                    handleCreate("normal")
+                  }}
+                  className="w-full sm:w-auto px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300"
+                >
+                  Create
+                </button>
+
+              </DialogFooter>
             </TabsContent>
 
-            <TabsContent value="notion">
-              Notion integration form here
+            <TabsContent value="notion" className="space-y-2">
+              {refreshToken ?
+                <div className="space-y-2">
+                  <Label>Your Notion page link</Label>
+                  <Input
+                    value={collectionNotionState.connect_notion_url}
+                    onChange={(e) =>
+                      setCollectionNotionState(prev => ({
+                        ...prev,
+                        connect_notion_url: e.target.value
+                      }))
+                    }
+                    placeholder="URL here"></Input>
+
+                  <Label>Title of collection</Label>
+                  <Input className="w-full" value={currentCollectionMetadata.title}
+                    onChange={(e) => {
+                      setCurrentCollectionMetadata(prev => ({
+                        ...prev,
+                        title: e.target.value,
+                      }))
+                    }} />
+
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <Button
+                      variant="outline"
+                      className="w-full sm:w-auto"
+                      onClick={() => {
+                        // const newCard: Card = {
+                        //   index: currentCollectionMetadata.index,
+                        //   question: "",
+                        //   hint: "",
+                        //   answer: "",
+                        // }
+
+                        setNewCardList(prev => [
+                          {
+                            index: crypto.randomUUID(),
+                            question: "",
+                            hint: "",
+                            answer: "",
+                            userID: userID,
+                            collectionID: currentCollectionMetadata.collectionID,
+                          },
+                          ...prev,
+
+                        ])
+                        // setCurrentCollectionMetadata((prev) => ({
+                        //     ...prev,
+                        //     index : currentCollectionMetadata.index + 1,
+                        // }))
+                      }}
+                    >
+                      Add card
+                    </Button>
+                  </div>
+
+                  {newCardList.length !== 0 && (
+                    <div className="max-h-[300px] overflow-y-auto space-y-2">
+                      {newCardList.map((card, i) => (
+                        <div
+                          key={card.index}
+                          //   className="space-y-2"
+                          className="p-3 space-y-2 rounded-lg border bg-gray-50 text-sm sm:text-base"
+                        >
+                          <div className="flex"
+                            onClick={() => handleRemoveCard(card.index)}>
+                            <Label>Card {newCardList.length - i}</Label>
+                            <div className="ml-auto p-1 bg-red-400 rounded-md flex text-white">
+
+                              <Trash2 className="w-4 h-4 text-white" />
+                            </div>
+                          </div>
+                          <Textarea
+                            value={card.question}
+                            onChange={(e) => {
+                              handleInputChange(card.index, "question", e.target.value)
+                            }}
+                            required placeholder="Question here"
+                            className="min-h-[40px] max-h-[150px] overflow-y-auto" />
+                          <Textarea
+                            value={card.answer}
+                            onChange={(e) => {
+                              handleInputChange(card.index, "answer", e.target.value)
+                            }}
+                            required placeholder="Answer here"
+                            className="min-h-[40px] max-h-[150px] overflow-y-auto" />
+                          {/* <Input required placeholder="Question here"></Input>
+                        <Input required placeholder="Answer here"></Input> */}
+                          <Input
+                            value={card.hint}
+                            onChange={(e) => {
+                              handleInputChange(card.index, "hint", e.target.value)
+                            }}
+                            placeholder="Hint (optional)"></Input>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                </div> :
+
+                <div>
+                  <Label>You must connect to Notion</Label>
+                  <p>Go to HOME page, click to your avatar then authorization with Notion</p>
+
+
+                </div>
+              }
+
+              <DialogFooter className="flex flex-col sm:flex-row gap-2">
+                <button
+                  onClick={() => setOpeningCollection(false)}
+                  className="w-full sm:w-auto px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  disabled={loadingTask.createNewCollection}
+                  onClick={() => {
+                    // console.log(newCardList)
+                    handleCreate("notion")
+                  }}
+                  className="w-full sm:w-auto px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300"
+                >
+                  Create
+                </button>
+
+              </DialogFooter>
             </TabsContent>
+
+
             <TabsContent value="ai">
               AI integration form here
             </TabsContent>
           </Tabs>
 
-          <DialogFooter className="flex flex-col sm:flex-row gap-2">
-            <button
-              onClick={() => setOpeningCollection(false)}
-              className="w-full sm:w-auto px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300"
-            >
-              Cancel
-            </button>
 
-            <button
-                disabled={loadingTask.createNewCollection}
-              onClick={() => {
-                // console.log(newCardList)
-                handleCreate()
-              }}
-              className="w-full sm:w-auto px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300"
-            >
-              Create
-            </button>
-
-          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

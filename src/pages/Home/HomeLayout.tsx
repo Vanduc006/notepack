@@ -6,7 +6,7 @@ import ListCollection from './Collection/ListCollection'
 import NewCollection from './Collection/NewCollection'
 import QueryAppUser from '@/services/QueryAppUser'
 import { Button } from '@/components/ui/button'
-import RefreshToken from '@/services/RefreshToken'
+// import RefreshToken from '@/services/RefreshToken'
 import { LogOut } from 'lucide-react'
 // import { Button } from '@/components/ui/button'
 // import { BookOpen } from 'lucide-react'
@@ -45,14 +45,9 @@ const HomeLayout = () => {
     userID: ""
   })
 
-  const getNotionAccess = async() => {
-    await RefreshToken(appUser.notion_refresh_token).then(data => {
-      console.log(data)
-    })
-  }
-
   // console.log(refreshList)
   useEffect(() => {
+    document.title = "HOME | NOTEPACK"
     const getUser = async() => {
       const { data: { session } } = await supabase.auth.getSession()
       // const { data: { user } } = await supabase.auth.getUser()
@@ -188,17 +183,18 @@ const HomeLayout = () => {
         {userID && (
           <div className='space-y-2'>
             <NewCollection 
+            refreshToken={appUser.notion_refresh_token}
             onUpdateCollection={() => setRefreshList(prev => !prev)}
             userID={userID}/>
             <ListCollection userID={userID} refreshList={refreshList}/>
           </div>
         )}
 
-        <Button className='mt-2'
+        {/* <Button className='mt-2'
         onClick={() => {
           getNotionAccess()
         }}
-        >Get Token</Button>
+        >Get Token</Button> */}
 
         {/* <div className='text-xl font-semibold my-2 opacity-50'>[COMMING SOON] ANNOTATION CARD</div> */}
 

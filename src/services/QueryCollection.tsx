@@ -3,6 +3,7 @@ import supabase from './ConnectSupbase'
 
 const QueryCollection = async(
     statement : string,
+    collectionID ?: string,
     userID ?: string,
     playload ?: any,
 ):Promise<any> => {
@@ -13,6 +14,7 @@ const QueryCollection = async(
       .from('collection')
       .update(playload)
       .eq('userID',userID)
+      .eq('collectionID',collectionID)
       
       if (error) {
         return error

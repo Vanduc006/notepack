@@ -1,8 +1,13 @@
 import supabase from '@/services/ConnectSupbase'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { useEffect } from 'react'
 
 const AuthLayout = () => {
+
+    useEffect(() => {
+        document.title = "AUTHORIZE | NOTEPACK"
+    },[])
     const signUpGoogle = async() => {
         await supabase.auth.signInWithOAuth({
             provider : 'google'
@@ -26,7 +31,7 @@ const AuthLayout = () => {
                 Continue with Google
             </Button>
 
-            <Button className='w-full' variant='default' onClick={signUpNotion}>
+            <Button disabled className='w-full' variant='default' onClick={signUpNotion}>
                 Continue with Notion
             </Button>
         </Card>
