@@ -60,6 +60,7 @@ const QueryCollection = async(
       const { data, error } = await supabase
         .from('collection')
         .delete()
+        .eq('collectionID',collectionID)
         .eq('userID', userID)
 
       if (error) {

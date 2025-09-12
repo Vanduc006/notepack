@@ -12,6 +12,7 @@ import AuthLayout from './pages/Auth/AuthLayout'
 import BounceLoader from 'react-spinners/BounceLoader'
 import ListCard from './pages/Home/Card.tsx/ListCard'
 import CallBack from './pages/Auth/CallBack'
+import EditCollection from './pages/Home/Collection/EditCollection'
 
 function ProtectedRoute({ session,children }: {session :any,children: React.ReactNode }) {
   
@@ -90,6 +91,15 @@ function App() {
           element={
             <ProtectedRoute session={session}>
               <HomeLayout />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/edit"
+          element={
+            <ProtectedRoute session={session}>
+              <EditCollection />
             </ProtectedRoute>
           }
         />

@@ -174,6 +174,9 @@ const NewCollection = ({ refreshToken, userID, onUpdateCollection }: NewCollecti
 
       })
     }
+    setCurrentCollectionMetadata(CollectionMetadata)
+    setCollectionNotionState(collectionNotion)
+    setNewCardList([])
 
     // setCurrentCollectionMetadata(prev => ({
     //   ...prev,
