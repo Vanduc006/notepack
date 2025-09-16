@@ -29,7 +29,7 @@ import EmbeddCollection from "./EmbeddCollection"
 import DateFormat from "../DateFormat"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import ClipLoader from 'react-spinners/ClipLoader'
-import QueyCard from "@/services/QueyCard"
+// import QueyCard from "@/services/QueyCard"
 
 type ListCollectionProps = {
   userID: string,

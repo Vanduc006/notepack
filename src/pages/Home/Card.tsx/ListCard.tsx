@@ -1,7 +1,7 @@
 // import React from 'react'
 import { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import BounceLoader from 'react-spinners/BounceLoader'
+// import BounceLoader from 'react-spinners/BounceLoader'
 import { Flashcard } from './EmbeddCard'
 import QueyCard from '@/services/QueyCard'
 import supabase from '@/services/ConnectSupbase'
@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button'
 import { ArrowLeft } from 'lucide-react'
 const ListCard = () => {
     const [searchParams] = useSearchParams()
-    const [loading,setLoading] = useState(false)
+    // const [loading,setLoading] = useState(false)
     const [currentCardList,setCurrentCardList] = useState([])
     const [userID,setUserID] = useState<string>('')
     // const [collectionID,setCollectionID] = useState<string | null>('')
@@ -25,7 +25,7 @@ const ListCard = () => {
     useEffect(() => {
        document.title = "FLASHCARD | NOTEPACK"
         const fetchCard = async () => {
-            setLoading(true)
+            // setLoading(true)
             const { data: { session } } = await supabase.auth.getSession()
             if (session?.user) {
               setUserID(session.user.id)
@@ -40,7 +40,7 @@ const ListCard = () => {
             await QueyCard('FETCH','', cid).then(data => {
                 // setCurrentCardList(data)
                 setCurrentCardList(data || [])
-                setLoading(false)
+                // setLoading(false)
             }) 
         }
 
