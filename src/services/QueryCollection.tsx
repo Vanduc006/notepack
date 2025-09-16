@@ -3,7 +3,7 @@ import supabase from './ConnectSupbase'
 
 const QueryCollection = async(
     statement : string,
-    collectionID ?: string,
+    collectionID ?: string | null,
     userID ?: string,
     playload ?: any,
 ):Promise<any> => {
@@ -39,6 +39,20 @@ const QueryCollection = async(
         return null
       }
       return data
+    }
+
+    case 'FETCHTOEDIT' : {
+      const { data, error } = await supabase
+        .from('collection')
+        .select('*')
+        .eq('userID', userID)
+        .eq('collectionID',collectionID)
+        // .order("created_at", { ascending: false})
+      if (error) {
+        console.error("FETCH error:", error)
+        return null
+      }
+      return data[0]
     }
 
     case 'INSERT': {

@@ -168,8 +168,8 @@ const ListCollection = ({ userID, refreshList }: ListCollectionProps) => {
       console.log(data)
     )
 
-    await QueyCard("DELETE")
-    setListCollection(prev => prev.filter(collection => collection.collectionID !== collectionDialogState.current_selected_collection_id));
+    // await QueyCard("DELETE")
+    // setListCollection(prev => prev.filter(collection => collection.collectionID !== collectionDialogState.current_selected_collection_id));
 
     setCollectionDialogState(prev => ({
       ...prev,

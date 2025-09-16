@@ -20,7 +20,7 @@ import EmbeddCollection from "./EmbeddCollection"
 // import { title } from "process"
 // import RefreshToken from "@/services/RefreshToken"
 
-type Card = {
+export type Card = {
   index: string,
   question: string,
   hint: string,
@@ -268,7 +268,6 @@ const NewCollection = ({ refreshToken, userID, onUpdateCollection }: NewCollecti
                         collectionID: currentCollectionMetadata.collectionID,
                       },
                       ...prev,
-
                     ])
                     // setCurrentCollectionMetadata((prev) => ({
                     //     ...prev,

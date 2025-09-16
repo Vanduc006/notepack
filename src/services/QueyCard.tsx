@@ -9,6 +9,21 @@ const QueyCard = async(
     payload ?: any,
 ):Promise<any> => {
   switch (statement) {
+
+    case 'UPDATE' : {
+      const {error} = await supabase
+      .from('card')
+      .update(payload)
+      .eq("cardID",cardID)
+      .eq("collection",collectionID)
+      .eq("userID",userID)
+
+      if (error) {
+        return error
+      }
+      return "OK"
+    }
+
     case 'FETCH': {
       // if (!userID) {
       //   // throw new Error("userID is required for FETCH")
@@ -19,7 +34,7 @@ const QueyCard = async(
         .select('*')
         // .eq('userID', userID)
         .eq('collectionID', collectionID)
-        .order("created_at", { ascending: false})
+        // .order("created_at", { ascending: true})
 
       if (error) {
         console.error("FETCH error:", error)
@@ -50,6 +65,7 @@ const QueyCard = async(
         .eq('userID', userID)
         .eq('collectionID',collectionID )
         .eq('cardID', cardID)
+        
       if (error) {
         console.error("DELETE error:", error)
         return null

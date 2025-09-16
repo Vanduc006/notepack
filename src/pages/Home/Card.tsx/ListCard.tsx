@@ -48,18 +48,18 @@ const ListCard = () => {
     }, [searchParams])
 
 
-    if (loading) {
-        return (
-        <div className='min-h-screen bg-gradient-to-br from-background via-muted/30 to-background flex flex-col'>
-          <div className='flex-1 flex items-center justify-center'>
-            <div className='text-2xl font-bold flex items-center justify-center gap-2'>
-              NOTEPACK
-              <BounceLoader size={20} className='ml-2' color='#14b8a6'/> 
-            </div>
-          </div>
-        </div>
-        )
-    }
+    // if (loading) {
+    //     return (
+    //     <div className='min-h-screen bg-gradient-to-br from-background via-muted/30 to-background flex flex-col'>
+    //       <div className='flex-1 flex items-center justify-center'>
+    //         <div className='text-2xl font-bold flex items-center justify-center gap-2'>
+    //           NOTEPACK
+    //           <BounceLoader size={20} className='ml-2' color='#14b8a6'/> 
+    //         </div>
+    //       </div>
+    //     </div>
+    //     )
+    // }
 
   return (
     <div className={`min-h-screen ${bgClass} p-5`}>
