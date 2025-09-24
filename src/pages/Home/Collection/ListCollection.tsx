@@ -164,8 +164,16 @@ const ListCollection = ({ userID, refreshList }: ListCollectionProps) => {
       ...prev,
       loading_delete : true
     }))
+
     await QueryCollection("DELETE", collectionDialogState.current_selected_collection_id, userID, {}).then(data =>
       console.log(data)
+    )
+
+    // setListNewCard(prev => prev.filter(card => card.index !== id));
+    setListCollection(prev => 
+      prev.filter((collection) => {
+        collection.collectionID !== collectionDialogState.current_selected_collection_id
+      })
     )
 
     // await QueyCard("DELETE")
@@ -176,6 +184,8 @@ const ListCollection = ({ userID, refreshList }: ListCollectionProps) => {
       delete: false,
       loading_delete : false
     }))
+
+    
 
 
   }

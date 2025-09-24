@@ -105,9 +105,12 @@ const EditCollection = () => {
     const handleSaveChange = async () => {
         console.log(listDeletedCard)
         console.log(listNewCard)
+
         listCard.map((card) => {
             console.log(card)
         })
+
+        await QueryCollection("UPDATE",collectionID,userID,Collection);
 
         if (listDeletedCard.length !== 0) {
             listDeletedCard.map(async (card) => {
@@ -129,6 +132,7 @@ const EditCollection = () => {
                 "question": card.question,
                 "hint": card.hint,
                 "answer": card.answer,
+                // "page"
             })
         })
 
@@ -144,6 +148,8 @@ const EditCollection = () => {
                 })
             })
         }
+
+        // navigate('/')
 
 
     }

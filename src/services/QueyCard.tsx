@@ -14,7 +14,7 @@ const QueyCard = async(
       const {error} = await supabase
       .from('card')
       .update(payload)
-      .eq("cardID",cardID)
+      .eq("index",cardID)
       .eq("collection",collectionID)
       .eq("userID",userID)
 
